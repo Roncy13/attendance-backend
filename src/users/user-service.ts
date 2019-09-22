@@ -6,6 +6,7 @@ import { User } from "./users-entity";
 import { UserDTO } from "./user-dto";
 import { LoginDTO } from "./login-dto";
 import { JwtService } from "@nestjs/jwt";
+import { AnimationFrameScheduler } from "rxjs/internal/scheduler/AnimationFrameScheduler";
 
 @Injectable()
 export class UserService {
@@ -70,5 +71,9 @@ export class UserService {
       user_details: payload,
       status: 200
     };
+  }
+
+  async verify(token: string) {
+    return this.jwtService.verify(token);
   }
 }

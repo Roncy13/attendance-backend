@@ -1,10 +1,12 @@
-import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException, UseGuards, Get } from '@nestjs/common';
 import { UserDTO } from './user-dto';
 import { Response } from 'express';
 import { UserService } from './user-service';
 import { ResponseFormat } from '../utilities/libraries';
 import { LoginDTO } from './login-dto';
 import { NOT_FOUND } from '../utilities/constants';
+import { AuthGuard } from '../auth-guard';
+import { UserDecorator } from './user.decorator';
 
 @Controller('user')
 export class UsersController {
@@ -39,6 +41,7 @@ export class UsersController {
     } catch(err) {
 
       console.log(err);
+
       const { statusCode } = err.response;
       
       if (statusCode === HttpStatus.NOT_FOUND) {
@@ -49,5 +52,11 @@ export class UsersController {
 
       throw new InternalServerErrorException(err);
     }
+  }
+
+  @Get('/info')
+  @UseGuards(AuthGuard)
+  async info(@UserDecorator() user) {
+    console.log(user)
   }
 }
