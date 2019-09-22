@@ -1,9 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { UserRepository } from "./user-repository";
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from "./users-entity";
 import { UserDTO } from "./user-dto";
+import { LoginDTO } from "./login-dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UserService {
@@ -11,7 +13,8 @@ export class UserService {
 
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository
+    private userRepository: UserRepository,
+    private jwtService: JwtService
   ) {}
 
   async getUsers(): Promise<User[]> {
@@ -20,16 +23,52 @@ export class UserService {
 
   async create(user: UserDTO): Promise<User> {
     user.salt = await bcrypt.genSalt(this.saltRounds);
-    user.password = await bcrypt.hash(user.password, user.salt);
+    user.password = await this.passwordHash(user.password, user.salt); //bcrypt.hash(user.password, user.salt);
 
     return this.userRepository.save(user);
   }
 
-  async compareHash(password: string|undefined, hash: string|undefined): Promise<boolean> {
-    return bcrypt.compare(password, hash);
+
+  async passwordHash(password: string, hash: string): Promise<string> {
+    return bcrypt.hash(password, hash);
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ email });
+  }
 
+  async login(loginDTO: LoginDTO) {
+    const {
+      email,
+      password
+    } = loginDTO;
+
+    const user = await this.findByEmail(email);
+    
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    const passwordCheck = await this.passwordHash(password, user.salt);
+
+    if (passwordCheck !== user.password) {
+      throw new NotFoundException();
+    }
+
+    delete user.password;
+    delete user.salt;
+
+    return await this.generateToken(user);
+  }
+
+  async generateToken(payload) {
+    const accessToken = await this.jwtService.sign(JSON.stringify(payload));
+
+    return {
+      expires_in: 3600,
+      access_token: accessToken,
+      user_details: payload,
+      status: 200
+    };
   }
 }
