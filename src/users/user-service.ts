@@ -6,17 +6,16 @@ import { User } from "./users-entity";
 import { UserDTO } from "./user-dto";
 import { LoginDTO } from "./login-dto";
 import { JwtService } from "@nestjs/jwt";
-import { AnimationFrameScheduler } from "rxjs/internal/scheduler/AnimationFrameScheduler";
-
+import { MaintainService } from "../utilities/service/maintain-service";
 @Injectable()
-export class UserService {
+export class UserService extends MaintainService {
   private saltRounds = 10;
 
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService
-  ) {}
+  ) {super(userRepository)}
 
   async getUsers(): Promise<User[]> {
     return await this.userRepository.find();

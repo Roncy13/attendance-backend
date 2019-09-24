@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException, UseGuards, Get } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException, UseGuards, Get, Put } from '@nestjs/common';
 import { UserDTO } from './user-dto';
 import { Response } from 'express';
 import { UserService } from './user-service';
@@ -21,9 +21,27 @@ export class UsersController {
     try {
 
       const data = await this.userService.create(dto);
-      const msg = 'User Has been Registered Successfully';
+      const msg = 'Student Has been Registered Successfully';
 
       return ResponseFormat(resp, msg, data, HttpStatus.CREATED);
+    } catch(err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  @Put()
+  @UseGuards(AuthGuard)
+  async update(
+    @Body() dto: UserDTO,
+    @Res() resp: Response,
+    @UserDecorator() user
+  ) {
+    try {
+      const data = await this.userService.updateNoTrail(dto, user.id);
+      const msg = 'Student Has been Updated Successfully';
+      delete data['salt'];
+
+      return ResponseFormat(resp, msg, data, HttpStatus.OK);
     } catch(err) {
       throw new InternalServerErrorException(err);
     }
@@ -39,8 +57,6 @@ export class UsersController {
       return ResponseFormat(resp, msg, data, HttpStatus.CREATED)
 
     } catch(err) {
-
-      console.log(err);
 
       const { statusCode } = err.response;
       
