@@ -1,10 +1,9 @@
-import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException, UseGuards, Get, Put } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, InternalServerErrorException, UseGuards, Get, Put, Param } from '@nestjs/common';
 import { UserDTO } from './user-dto';
 import { Response } from 'express';
 import { UserService } from './user-service';
 import { ResponseFormat } from '../utilities/libraries';
 import { LoginDTO } from './login-dto';
-import { NOT_FOUND } from '../utilities/constants';
 import { AuthGuard } from '../auth-guard';
 import { UserDecorator } from './user.decorator';
 
@@ -37,7 +36,7 @@ export class UsersController {
     @UserDecorator() user
   ) {
     try {
-      const data = await this.userService.updateNoTrail(dto, user.id);
+      const data = await this.userService.updateNoTrail(dto, user.id, user.id);
       const msg = 'Student Has been Updated Successfully';
       delete data['salt'];
 

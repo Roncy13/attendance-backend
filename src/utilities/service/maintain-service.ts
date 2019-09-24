@@ -10,8 +10,8 @@ export class MaintainService extends GenericService {
     return this.repository.find();
   }
 
-  save(object: any, email: string = '', bool = true): Promise<Object> {
-    if (!bool) object['updatedBy'] = email;
+  async save(object: any, userId: number, bool = true): Promise<Object> {
+    if (!bool) object['updatedBy'] = userId;
 
     return this.repository.save(object);
   }
@@ -24,35 +24,35 @@ export class MaintainService extends GenericService {
     return this.findByID(id);
   }
 
-  async update(object: any, id: any, email: string = '', bool: boolean = true): Promise<Object> {
+  async update(object: any, id: any, userId: number, bool: boolean = true): Promise<Object> {
     const oldData: any = await this.findByUpdate(id),
       keys = Object.keys(object);
 
     keys.forEach(val => (oldData[val] = object[val]));
 
-    if (bool) oldData['updatedBy'] = email;
+    if (bool) oldData['updatedBy'] = userId;
 
     return await this.repository.save(oldData);
   }
 
-  async updateNoTrail(object: any, id: any, email: string = '') {
-    return this.update(object, id, email, false);
+  async updateNoTrail(object: any, id: any, userId: number) {
+    return this.update(object, id, userId, false);
   }
 
-  async inactive(id, email: string = ''): Promise<Object> {
+  async inactive(id, userId: number): Promise<Object> {
     const oldData: any = await this.findByUpdate(id);
 
     oldData['Active'] = STATUS.INACTIVE;
-    oldData['UpdatedBy'] = email;
+    oldData['updatedBy'] = userId;
 
     return await this.repository.save(oldData);
   }
 
-  async active(id, email: string = ''): Promise<Object> {
+  async active(id, userId: number): Promise<Object> {
     const oldData: any = await this.findByUpdate(id);
 
     oldData['Active'] = STATUS.ACTIVE;
-    oldData['UpdatedBy'] = email;
+    oldData['updatedBy'] = userId;
 
     return await this.repository.save(oldData);
   }

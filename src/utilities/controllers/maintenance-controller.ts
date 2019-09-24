@@ -8,16 +8,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '../../auth-guard';
-@UseGuards(AuthGuard)
+
+//@UseGuards(AuthGuard)
 export abstract class MaintenanceController extends GenericController {
   constructor(public service: any) {
     super(service);
   }
-  abstract async create(dto: any, res: Response): Promise<Response>;
+  abstract async create(dto: any, res: Response, userDecorator?: any): Promise<Response>;
   abstract async update(
-    updateJobDTO: any,
+    dto: any,
     res: Response,
     id: number,
+    userDecorator?: any
   ): Promise<Response>;
   @Put(':id/active')
   async active(

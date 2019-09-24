@@ -11,6 +11,7 @@ dotenv.config();
 @Module({
   imports: [TypeOrmModule.forFeature([UserRepository]), JwtModule.register({ secret: process.env.SECRET_KEY })],
   controllers: [UsersController],
-  providers: [UserService]
+  providers: [UserService, UserRepository],
+  exports: [UserService, UserRepository]
 })
 export class UsersModule {}

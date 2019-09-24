@@ -8,12 +8,11 @@ import {
   Param,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { PageDTO } from '../dto/page-dto';
-import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
-import { ResponseDTO } from '../dto/respone-dto';
+import { BuildPagi } from '../service/dto/build-pagi-dto';
+import { PageDTO } from '../service/dto/page-dto';
 import { StatusCode } from '../constants';
-import { BuildPagi } from '../dto/build-pagi-dto';
+import { ResponseDTO } from '../service/dto/respone-dto';
 
 interface PubService {
   findAll(): Promise<any>;

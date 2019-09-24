@@ -8,10 +8,11 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { EnrollmentModule } from './enrollment/enrollment.module';
 import { ScheduleDatesModule } from './schedule-dates/schedule-dates.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthGuard } from './auth-guard';
 
 @Module({
   imports: [TypeOrmModule.forRoot(), UsersModule, CoursesModule, ScheduleModule, AttendanceModule, EnrollmentModule, ScheduleDatesModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AuthGuard],
 })
 export class AppModule {}

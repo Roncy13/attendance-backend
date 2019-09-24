@@ -28,11 +28,6 @@ export class GenericService {
     return await this.repository.find({ relations });
   }
 
-  async save(object: any): Promise<Object> {
-    const { id } = await this.repository.save(object);
-
-    return await this.findByUpdate(id);
-  }
 
   public async findByID(id: number): Promise<Object> {
     return await this.repository.findOne(id);
@@ -43,29 +38,6 @@ export class GenericService {
 
     oldData['updatedAt'] = new Date();
     return oldData;
-  }
-
-  async update(object: any, id: any): Promise<Object> {
-    const oldData: any = await this.findByUpdate(id),
-      keys = Object.keys(object);
-
-    keys.forEach(val => (oldData[val] = object[val]));
-    return await this.repository.save(oldData);
-  }
-
-  async inactive(id): Promise<Object> {
-    const oldData: any = await this.findByUpdate(id);
-
-    oldData['status'] = STATUS.INACTIVE;
-
-    return await this.repository.save(oldData);
-  }
-
-  async active(id): Promise<Object> {
-    const oldData: any = await this.findByUpdate(id);
-
-    oldData['status'] = STATUS.ACTIVE;
-    return await this.repository.save(oldData);
   }
 
   // if there is a custom implementation, please override this to the respective service
